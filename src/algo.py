@@ -73,7 +73,7 @@ def get_leboncoin_page():
       print("Price: ", str(announce["price_cents"] / 100) + " €")
       print("Surface: ", str(announce["attributes"]["square"]["value"]) + " m²")
       print("Price / m²: ", str((announce["price_cents"] / 100) / announce["attributes"]["square"]["value"]) + " €")
-      print(announce["images"]["urls"][0])
+      print("Image 1: ", announce["images"]["urls"][0])
       print("Link: ", announce["url"])
       print("City: ", announce["location"]["city"])
       print("Zip code: ", announce["location"]["zipcode"])
