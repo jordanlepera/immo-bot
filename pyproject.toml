@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "immo-bot"
+version = "0.1.0"
+description = ""
+authors = ["Jordan Le Pera <leperajordan@gmail.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.scripts]
+start = "src.main:main"
+test = "test.test:test"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-telegram-bot = "^20.1"
+python-dotenv = "^1.0.0"
+selenium = "^4.8.2"
+selenium-stealth = "^1.0.6"
+beautifulsoup4 = "^4.11.2"
+psutil = "^5.9.4"
+rich = "^13.3.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
