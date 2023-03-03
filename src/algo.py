@@ -28,6 +28,55 @@ def create_chrome_driver():
   
   return driver
 
+def get_meilleuragents_page():
+  driver = create_chrome_driver()
+
+  city = "colmar"
+  zip_code = "68000"
+
+  URL = f"https://www.meilleursagents.com/prix-immobilier/{city}-{zip_code}/"
+  driver.get(URL)
+  time.sleep(5)
+  try:
+    accept_cookie = driver.find_element(By.ID,"didomi-notice-agree-button")
+    accept_cookie.click()
+  except:
+    pass
+  time.sleep(5)
+
+  page_content = driver.page_source
+  # Extract real estate prices estimations
+  soup = BeautifulSoup(page_content, "html.parser")
+  prices_div = soup.find_all("ul", {"class": "prices-summary__price-range"})
+  appartment_prices_mean = int(str(prices_div[0].find_all("li")[1].text).strip().replace("\n", "").replace("\u202f", "").replace("\xa0", "").replace(" ", "").replace("€", ""))
+  appartment_prices_interval = str(prices_div[0].find_all("li")[2].text).strip().replace("\n", "").replace("\u202f", "").replace("\xa0", "").replace(" ", "").replace("de", "").replace("€", "").split("à")
+  if len(appartment_prices_interval) == 1:
+    for i in range(len(appartment_prices_interval)):
+        appartment_prices_interval[i] = int(appartment_prices_interval[i])
+    appartment_confidence_index = len(prices_div[0].find_all("li", {"class": "green"}))
+    print("appartment_prices_mean: ", appartment_prices_mean)
+    print("appartment_prices_min: ", appartment_prices_interval[0])
+    print("appartment_prices_max: ", appartment_prices_interval[1])
+    print("appartment_confidence_index: ", appartment_confidence_index)
+  if len(prices_div) > 1:
+    house_prices_mean = int(str(prices_div[1].find_all("li")[1].text).strip().replace("\n", "").replace("\u202f", "").replace("\xa0", "").replace(" ", "").replace("€", ""))
+    house_prices_interval = str(prices_div[1].find_all("li")[2].text).strip().replace("\n", "").replace("\u202f", "").replace("\xa0", "").replace(" ", "").replace("de", "").replace("€", "").split("à")
+    for i in range(len(house_prices_interval)):
+      house_prices_interval[i] = int(house_prices_interval[i])
+    house_confidence_index = len(prices_div[1].find_all("li", {"class": "green"}))
+    print("house_prices_mean: ", house_prices_mean)
+    print("house_prices_min: ", house_prices_interval[0])
+    print("house_prices_max: ", house_prices_interval[1])
+    print("house_confidence_index: ", house_confidence_index)
+
+  # Type exact address and launch search
+  driver.find_element(By.XPATH, "//input[@name='q'][@type='text']").send_keys("avenue montaigne, 75008 Paris")
+  time.sleep(2)
+  driver.find_element(By.XPATH, "//div[@class='tt-dataset-0']").click()
+  time.sleep(5)
+
+  driver.quit()
+
 def get_leboncoin_page():
 
   driver = create_chrome_driver()
@@ -35,8 +84,8 @@ def get_leboncoin_page():
   category = "9" # Immobilier
   type_of_announce = "appartements"
   page = 1
-  city = "Colmar"
-  zip_code = "68000"
+  city = "Paris"
+  zip_code = "75000"
   perimeter = "20000"
 
   URL = f"https://www.leboncoin.fr/recherche?category={category}&text={type_of_announce}&locations={city}_{zip_code}_{perimeter}&page={page}"
@@ -48,9 +97,12 @@ def get_leboncoin_page():
   driver.get(URL)
   time.sleep(5)
   # driver.implicitly_wait(10)
-  if driver.find_element(By.ID,"didomi-notice-agree-button").is_displayed():
-    driver.find_element(By.ID,"didomi-notice-agree-button").click()
-  time.sleep(5)
+  try:
+    accept_cookie = driver.find_element(By.ID,"didomi-notice-agree-button")
+    accept_cookie.click()
+  except:
+    pass
+  time.sleep(10)
 
   page_content = driver.page_source
 
